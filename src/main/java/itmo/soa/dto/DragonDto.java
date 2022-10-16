@@ -1,7 +1,6 @@
 package itmo.soa.dto;
 
 import itmo.soa.entity.Coordinates;
-import itmo.soa.entity.Dragon;
 import itmo.soa.entity.DragonCave;
 import itmo.soa.enums.Color;
 import itmo.soa.enums.DragonCharacter;
@@ -53,19 +52,6 @@ public class DragonDto {
         this.character = character;
         this.cave = cave;
     }
-
-    public DragonDto(Dragon dragon) {
-        this.id = dragon.getId();
-        this.name = dragon.getName();
-        this.coordinates = dragon.getCoordinates();
-        setCreationDate(dragon.getCreationDate());
-        this.age = dragon.getAge();
-        this.color = dragon.getColor();
-        this.type = dragon.getType();
-        this.character = dragon.getCharacter();
-        this.cave = dragon.getCave();
-    }
-
 
 
     public boolean setAge(long age) {

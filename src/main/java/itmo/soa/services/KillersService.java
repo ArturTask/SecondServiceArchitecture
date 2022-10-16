@@ -1,24 +1,17 @@
 package itmo.soa.services;
 
-import com.google.gson.Gson;
 import itmo.soa.dto.*;
-import itmo.soa.exceptions.BadRequestException;
-import itmo.soa.exceptions.CaveNotFoundException;
-import itmo.soa.exceptions.IllegalIdException;
-import org.apache.http.HttpResponse;
+import itmo.soa.exceptions.DragonsServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.List;
 
 import static org.springframework.http.HttpMethod.*;
@@ -38,8 +31,11 @@ public class KillersService {
         return String.valueOf(currentCaveId);
     }
 
-    public DefaultDto killDragon(String id) throws IOException, BadRequestException {
+    public DefaultDto killDragon(String id) throws IOException, DragonsServiceException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         DragonDto dragonDto = requestService.sendRequest("https://localhost:8080/dragons/" + id, GET, DragonDto.class);
+        if (currentCaveId == null){
+            return new DefaultDto(HttpStatus.OK.value(), "You are NOT IN Any CAVE ");
+        }
         if (currentCaveId!=dragonDto.getCave().getId()){
             return new DefaultDto(HttpStatus.OK.value(), "Dragon is in another cave: " + dragonDto.getCave().getId());
         }
@@ -47,7 +43,7 @@ public class KillersService {
         return new DefaultDto(HttpStatus.OK.value(), "Dragon " + dragonDto.getName() + "(id: " + id + ")" +  " is killed");
     }
 
-    public DefaultDto moveToCave(String moveCaveId) throws IOException, BadRequestException {
+    public DefaultDto moveToCave(String moveCaveId) throws IOException, DragonsServiceException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         try{
             Long.parseLong(moveCaveId);
         }

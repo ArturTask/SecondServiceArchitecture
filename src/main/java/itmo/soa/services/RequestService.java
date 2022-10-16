@@ -1,35 +1,44 @@
 package itmo.soa.services;
 
 import com.google.gson.Gson;
-import itmo.soa.dto.AllDragonsDto;
-import itmo.soa.dto.DragonDto;
 import itmo.soa.dto.ErrorDto;
-import itmo.soa.entity.Coordinates;
-import itmo.soa.entity.DragonCave;
-import itmo.soa.enums.Color;
-import itmo.soa.enums.DragonCharacter;
-import itmo.soa.enums.DragonType;
-import itmo.soa.exceptions.BadRequestException;
+import itmo.soa.exceptions.DragonsServiceException;
 import org.apache.http.client.methods.*;
-import org.apache.http.entity.StringEntity;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.security.*;
+import java.security.cert.CertificateException;
 
 @Service
 public class RequestService {
 
-    public <T> T sendRequest(String url, HttpMethod method, Class<T> dtoClass) throws IOException, BadRequestException { // returns any dto (t extends object)
+    public <T> T sendRequest(String url, HttpMethod method, Class<T> dtoClass) throws IOException, DragonsServiceException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException { // returns any dto (t extends object)
+
+        /*SSL*/
+        KeyStore keyStore;
         HttpUriRequest req = null;
+        keyStore = KeyStore.getInstance("jks");
+        ClassPathResource classPathResource = new ClassPathResource("soa2.jks");
+        InputStream inputStream = classPathResource.getInputStream();
+        keyStore.load(inputStream, "password".toCharArray());
+
+        SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(new SSLContextBuilder()
+                .loadTrustMaterial(null, new TrustSelfSignedStrategy())
+                .loadKeyMaterial(keyStore, "password".toCharArray()).build(),
+                NoopHostnameVerifier.INSTANCE);
+
         switch (method){
             case GET:{req = new HttpGet(url); break;}
             case POST:{req = new HttpPost(url); break;}
@@ -38,18 +47,32 @@ public class RequestService {
             default:{break;}
         }
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+        try (CloseableHttpClient httpClient = HttpClientBuilder.create().setSSLSocketFactory(socketFactory).build()) { // here include our prepared ssl
             try (CloseableHttpResponse response = httpClient.execute(req)) {
                 int statusCode = response.getStatusLine().getStatusCode();
                 System.out.println(statusCode);
                 String responseBody = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
                 if(statusCode!=200){
-                    throw new BadRequestException(String.valueOf(statusCode));
+                    String myErrMessage = "";
+                    try {
+                        ErrorDto errorDto = getEntityFromJson(responseBody, ErrorDto.class);
+                        myErrMessage = errorDto.getError();
+                    }
+                    catch (Exception ignored){
+                    }
+
+                    throw new DragonsServiceException("status code: " + statusCode + " message: " + myErrMessage);
                 }
 //                System.out.println("Response body: " + responseBody);
-                return new Gson().fromJson(responseBody, dtoClass);
+                return getEntityFromJson(responseBody, dtoClass);
             }
         }
 
     }
+
+    private <T> T getEntityFromJson(String jsonEntity, Class<T> entityClass){
+        return new Gson().fromJson(jsonEntity, entityClass);
+    }
+
+
 }

@@ -1,12 +1,12 @@
 package itmo.soa.exceptions;
 
-public class BadRequestException extends Exception{
+public class DragonsServiceException extends Exception{
     /**
      * Constructs a new exception with {@code null} as its detail message.
      * The cause is not initialized, and may subsequently be initialized by a
      * call to {@link #initCause}.
      */
-    public BadRequestException() {
+    public DragonsServiceException() {
     }
 
     /**
@@ -17,7 +17,7 @@ public class BadRequestException extends Exception{
      * @param message the detail message. The detail message is saved for
      *                later retrieval by the {@link #getMessage()} method.
      */
-    public BadRequestException(String message) {
+    public DragonsServiceException(String message) {
         super(message);
     }
 
@@ -35,7 +35,7 @@ public class BadRequestException extends Exception{
      *                unknown.)
      * @since 1.4
      */
-    public BadRequestException(String message, Throwable cause) {
+    public DragonsServiceException(String message, Throwable cause) {
         super(message, cause);
     }
 }

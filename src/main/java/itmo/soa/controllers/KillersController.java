@@ -2,7 +2,7 @@ package itmo.soa.controllers;
 
 import itmo.soa.dto.DefaultDto;
 import itmo.soa.dto.ErrorDto;
-import itmo.soa.exceptions.BadRequestException;
+import itmo.soa.exceptions.DragonsServiceException;
 import itmo.soa.exceptions.CaveNotFoundException;
 import itmo.soa.exceptions.IllegalIdException;
 import itmo.soa.services.KillersService;
@@ -12,6 +12,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 
 @RestController
 @RequestMapping(value = "/killers")
@@ -27,12 +32,12 @@ public class KillersController extends BaseController{
     }
 
     @PostMapping(value = "/dragons/{dragonId}/kill")
-    public ResponseEntity<DefaultDto> killDragon(@PathVariable String dragonId) throws IOException, BadRequestException {
+    public ResponseEntity<DefaultDto> killDragon(@PathVariable String dragonId) throws IOException, DragonsServiceException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         return new ResponseEntity<>(killersService.killDragon(dragonId), HttpStatus.OK);
     }
 
     @PostMapping(value = "/move-to-cave/{caveId}")
-    public ResponseEntity<DefaultDto> moveToCave(@PathVariable String caveId) throws IOException, BadRequestException {
+    public ResponseEntity<DefaultDto> moveToCave(@PathVariable String caveId) throws IOException, DragonsServiceException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
         return new ResponseEntity<>(killersService.moveToCave(caveId), HttpStatus.OK);
     }
 

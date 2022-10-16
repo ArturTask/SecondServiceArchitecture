@@ -2,7 +2,7 @@ package itmo.soa.controllers;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import itmo.soa.dto.ErrorDto;
-import itmo.soa.exceptions.BadRequestException;
+import itmo.soa.exceptions.DragonsServiceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -22,14 +22,14 @@ public class BaseController {
         return new ResponseEntity<>(new ErrorDto(HttpStatus.BAD_REQUEST.value(), "Bad Request"), HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler({IOException.class})
-//    public ResponseEntity<ErrorDto> handleIOException() {
-//        return new ResponseEntity<>(new ErrorDto(HttpStatus.BAD_REQUEST.value(), "Bad Request - first service offline"), HttpStatus.BAD_REQUEST);
-//    }
+    @ExceptionHandler({IOException.class})
+    public ResponseEntity<ErrorDto> handleIOException() {
+        return new ResponseEntity<>(new ErrorDto(HttpStatus.SERVICE_UNAVAILABLE.value(), "Bad Request - Dragons service is offline"), HttpStatus.SERVICE_UNAVAILABLE);
+    }
 
-    @ExceptionHandler({BadRequestException.class})
-    public ResponseEntity<ErrorDto> requestToFirstServiceFailed(BadRequestException e) {
-        return new ResponseEntity<>(new ErrorDto(HttpStatus.BAD_REQUEST.value(), "Bad Request - could not reach dragons service: code " + e.getMessage()), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler({DragonsServiceException.class})
+    public ResponseEntity<ErrorDto> requestToFirstServiceFailed(DragonsServiceException e) {
+        return new ResponseEntity<>(new ErrorDto(HttpStatus.BAD_REQUEST.value(), "Bad Request - from dragons service:  " + e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
 }
