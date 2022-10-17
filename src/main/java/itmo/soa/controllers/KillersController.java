@@ -26,7 +26,7 @@ public class KillersController extends BaseController{
     @Autowired
     private KillersService killersService;
 
-    @GetMapping(value = "/move-to-cave/")
+    @GetMapping(value = "/move-to-cave")
     public ResponseEntity<DefaultDto> getCaveId(){
         return new ResponseEntity<>(new DefaultDto(HttpStatus.OK.value(), killersService.getCaveId()), HttpStatus.OK);
     }

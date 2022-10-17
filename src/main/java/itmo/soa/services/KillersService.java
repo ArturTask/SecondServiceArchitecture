@@ -19,15 +19,12 @@ import static org.springframework.http.HttpMethod.*;
 @Service
 public class KillersService {
 
-    private static Long currentCaveId;
+    private static Long currentCaveId = 0L;
 
     @Autowired
     private RequestService requestService;
 
     public String getCaveId(){
-        if (currentCaveId==null){
-            return "";
-        }
         return String.valueOf(currentCaveId);
     }
 
