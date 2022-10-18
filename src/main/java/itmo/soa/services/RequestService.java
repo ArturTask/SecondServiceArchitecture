@@ -15,6 +15,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -31,6 +33,8 @@ public class RequestService {
         HttpUriRequest req = null;
         keyStore = KeyStore.getInstance("jks");
         ClassPathResource classPathResource = new ClassPathResource("soa2.jks");
+//        File f = new File("/Users/artur/Desktop/soa2.jks");
+//        InputStream inputStream = new FileInputStream(f);
         InputStream inputStream = classPathResource.getInputStream();
         keyStore.load(inputStream, "password".toCharArray());
 

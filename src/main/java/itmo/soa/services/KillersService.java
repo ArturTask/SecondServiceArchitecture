@@ -29,14 +29,14 @@ public class KillersService {
     }
 
     public DefaultDto killDragon(String id) throws IOException, DragonsServiceException, UnrecoverableKeyException, CertificateException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
-        DragonDto dragonDto = requestService.sendRequest("https://localhost:8080/dragons/" + id, GET, DragonDto.class);
+        DragonDto dragonDto = requestService.sendRequest("https://localhost:2740/dragons/" + id, GET, DragonDto.class);
         if (currentCaveId == null){
             return new DefaultDto(HttpStatus.OK.value(), "You are NOT IN Any CAVE ");
         }
         if (currentCaveId!=dragonDto.getCave().getId()){
             return new DefaultDto(HttpStatus.OK.value(), "Dragon is in another cave: " + dragonDto.getCave().getId());
         }
-        requestService.sendRequest("https://localhost:8080/dragons/" + id, DELETE, DragonDto.class);
+        requestService.sendRequest("https://localhost:2740/dragons/" + id, DELETE, DragonDto.class);
         return new DefaultDto(HttpStatus.OK.value(), "Dragon " + dragonDto.getName() + "(id: " + id + ")" +  " is killed");
     }
 
@@ -47,7 +47,7 @@ public class KillersService {
         catch (NumberFormatException e){
             return new DefaultDto(HttpStatus.OK.value(), "Id is not valid");
         }
-        AllDragonCavesDto allDragonCavesDto = requestService.sendRequest("https://localhost:8080/caves/", GET, AllDragonCavesDto.class);
+        AllDragonCavesDto allDragonCavesDto = requestService.sendRequest("https://localhost:2740/caves/", GET, AllDragonCavesDto.class);
         List<DragonCaveDto> caves = allDragonCavesDto.getCaves();
         for (DragonCaveDto dragonCaveDto : caves) {
             if (dragonCaveDto.getId()== Long.parseLong(moveCaveId)){
