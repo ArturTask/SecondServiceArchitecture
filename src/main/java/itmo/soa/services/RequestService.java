@@ -28,20 +28,20 @@ public class RequestService {
 
     public <T> T sendRequest(String url, HttpMethod method, Class<T> dtoClass) throws IOException, DragonsServiceException, KeyStoreException, CertificateException, NoSuchAlgorithmException, UnrecoverableKeyException, KeyManagementException { // returns any dto (t extends object)
 
-        /*SSL*/
-        KeyStore keyStore;
         HttpUriRequest req = null;
-        keyStore = KeyStore.getInstance("jks");
-        ClassPathResource classPathResource = new ClassPathResource("soa2.jks");
+        /*SSL*/
+//        KeyStore keyStore;
+//        keyStore = KeyStore.getInstance("jks");
+//        ClassPathResource classPathResource = new ClassPathResource("soa2.jks");
 //        File f = new File("/Users/artur/Desktop/soa2.jks");
 //        InputStream inputStream = new FileInputStream(f);
-        InputStream inputStream = classPathResource.getInputStream();
-        keyStore.load(inputStream, "password".toCharArray());
+//        InputStream inputStream = classPathResource.getInputStream();
+//        keyStore.load(inputStream, "password".toCharArray());
 
-        SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(new SSLContextBuilder()
-                .loadTrustMaterial(null, new TrustSelfSignedStrategy())
-                .loadKeyMaterial(keyStore, "password".toCharArray()).build(),
-                NoopHostnameVerifier.INSTANCE);
+//        SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(new SSLContextBuilder()
+//                .loadTrustMaterial(null, new TrustSelfSignedStrategy())
+//                .loadKeyMaterial(keyStore, "password".toCharArray()).build(),
+//                NoopHostnameVerifier.INSTANCE);
 
         switch (method){
             case GET:{req = new HttpGet(url); break;}
@@ -51,7 +51,7 @@ public class RequestService {
             default:{break;}
         }
 
-        try (CloseableHttpClient httpClient = HttpClientBuilder.create().setSSLSocketFactory(socketFactory).build()) { // here include our prepared ssl
+        try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) { // here include our prepared ssl
             try (CloseableHttpResponse response = httpClient.execute(req)) {
                 int statusCode = response.getStatusLine().getStatusCode();
                 System.out.println(statusCode);
